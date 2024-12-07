@@ -48,56 +48,6 @@ export const handler = async (event) => {
             };
         }
         
-        // GET /posts/{postId}/analytics
-        else if (path.match(/^\/posts\/[^/]+\/analytics$/) && httpMethod === 'GET') {
-            const postId = path.split('/')[2];
-            
-            const params = {
-                TableName: TABLE_NAME,
-                Key: {
-                    'post_id': postId
-                }
-            };
-            
-            const result = await dynamodb.get(params);
-            
-            if (!result.Item) {
-                return {
-                    statusCode: 404,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    body: JSON.stringify({ message: 'Post not found' })
-                };
-            }
-
-            const analytics = {
-                post_id: result.Item.post_id,
-                content: result.Item.content,
-                created_time: result.Item.created_time,
-                last_updated: result.Item.last_updated,
-                media_url: result.Item.media_url || '',
-                post_type: result.Item.post_type,
-                analytics: {
-                    average_sentiment: result.Item.average_sentiment || 0,
-                    average_toxic: result.Item.average_toxic || 0,
-                    total_comments: result.Item.total_comments || 0,
-                    sentiment_sum: result.Item.sentiment_sum || 0,
-                    toxic_sum: result.Item.toxic_sum || 0
-                }
-            };
-
-            return {
-                statusCode: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                body: JSON.stringify(analytics)
-            };
-        }
-
         else if (path.match(/^\/posts\/[^/]+\/history$/) && httpMethod === 'GET') {
             const postId = path.split('/')[2];
             
